@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>結果</title>
+</head>
+<body>
+  <h2>診断結果</h2>
+  <p id="result"></p>
+
+  <script>
+    const type = localStorage.getItem("type");
+
+    if (type === "heavy") {
+      document.getElementById("result").textContent = "おすすめ：唐揚げ";
+    } else {
+      document.getElementById("result").textContent = "おすすめ：サラダ";
+    }
+  </script>
+</body>
+</html>

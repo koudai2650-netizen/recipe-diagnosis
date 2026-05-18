@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>診断</title>
+</head>
+<body>
+  <h2>質問：今の気分は？</h2>
+
+  <button onclick="answer('heavy')">がっつり</button>
+  <button onclick="answer('light')">軽め</button>
+
+  <script>
+    function answer(type) {
+      localStorage.setItem("type", type);
+      location.href = "result.html";
+    }
+  </script>
+</body>
+</html>
