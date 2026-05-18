@@ -1,0 +1,763 @@
+// ============================================================
+// きぶんレシピ診断 — データ・診断ロジック（改善版）
+// ============================================================
+
+// ─── レシピデータ ───
+const recipes = [
+    {
+        id: "tamago-gohan",
+        name: "卵かけごはん アレンジ丼",
+        emoji: "🥚",
+        tagline: "朝ごはんに迷ったとき、これで決まり。",
+        description: "卵かけごはんに、ちょっと手を加えるだけで豪華に変身。醤油とバターの香りがたまりません。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "ご飯 1杯",
+            "卵 1個",
+            "バター 小さじ1",
+            "醤油 小さじ1",
+            "のり 1枚"
+        ],
+        steps: [
+            "ご飯をどんぶりに盛る",
+            "バターをご飯の上に乗せる",
+            "卵を割ってご飯にかける",
+            "醤油をかけてよく混ぜる",
+            "のりをちぎってトッピング"
+        ],
+        tips: "バターは温かいご飯の上に乗せると、香りが立ちます。卵は新鮮なものを選ぶと、より美味しくなります。",
+        reason: "朝が忙しい日も、5分で栄養満点の朝ごはんが完成。バターの香りで気分もアップ！",
+        tags: ["5分", "節約", "初心者OK", "がっつり"],
+        relatedIds: ["natto-gohan", "onigiri", "miso-soup"]
+    },
+    {
+        id: "natto-gohan",
+        name: "納豆ごはん 最強アレンジ",
+        emoji: "🫘",
+        tagline: "ネバネバのチカラで、朝からスタミナ満点。",
+        description: "納豆にちょっと工夫を加えるだけで、ごはんが進む一品に。栄養満点で、お財布にも優しい。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "ご飯 1杯",
+            "納豆 1パック",
+            "卵黄 1個",
+            "ねぎ 適量",
+            "醤油 小さじ1"
+        ],
+        steps: [
+            "ご飯をどんぶりに盛る",
+            "納豆をよくかき混ぜる",
+            "ご飯の上に納豆をかける",
+            "卵黄をトッピング",
+            "ねぎと醤油をかけて完成"
+        ],
+        tips: "納豆は粘りが出るまでしっかり混ぜることがポイント。卵黄を一緒に混ぜると、さらにクリーミーになります。",
+        reason: "栄養満点の納豆で、朝からエネルギーチャージ。5分で完成するから、寝坊した朝も大丈夫。",
+        tags: ["5分", "節約", "初心者OK", "がっつり"],
+        relatedIds: ["tamago-gohan", "onigiri", "miso-soup"]
+    },
+    {
+        id: "chahan",
+        name: "シンプル炒飯",
+        emoji: "🍚",
+        tagline: "ご飯の日の夜ご飯は、これで決まり。",
+        description: "ご飯と卵があれば、簡単に作れる炒飯。塩こしょうだけで十分美味しい。",
+        time: 15,
+        timeLabel: "約15分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "ご飯 1杯",
+            "卵 1個",
+            "油 小さじ2",
+            "塩 ひとつまみ",
+            "こしょう 少々",
+            "ねぎ 適量"
+        ],
+        steps: [
+            "フライパンに油を熱する",
+            "卵を割って炒める",
+            "ご飯を加えてほぐしながら炒める",
+            "塩こしょうで味を整える",
+            "ねぎをかけて完成"
+        ],
+        tips: "ご飯はあらかじめ冷やしておくと、ダマになりにくいです。強火でサッと炒めるのがコツ。",
+        reason: "冷ご飯の活用にぴったり。15分で、ボリューム満点の夜ご飯が完成。",
+        tags: ["15分", "節約", "初心者OK", "がっつり"],
+        relatedIds: ["yakisoba", "oyakodon", "salad"]
+    },
+    {
+        id: "miso-soup",
+        name: "具だくさん味噌汁",
+        emoji: "🍲",
+        tagline: "疲れた日にこれがあると、ほっと落ち着く。",
+        description: "野菜と豆腐をたっぷり入れた、栄養満点の味噌汁。温かいスープで、心も体も温まります。",
+        time: 10,
+        timeLabel: "約10分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "水 300ml",
+            "豆腐 100g",
+            "わかめ 大さじ1",
+            "ねぎ 適量",
+            "味噌 大さじ1"
+        ],
+        steps: [
+            "鍋に水を入れて沸かす",
+            "豆腐をサイコロ状に切る",
+            "沸騰したお湯に豆腐を入れる",
+            "わかめとねぎを加える",
+            "火を止めて味噌を溶く"
+        ],
+        tips: "味噌は火を止めてから溶くことで、風味が損なわれません。沸騰させすぎないようにしましょう。",
+        reason: "疲れた日の夜ご飯に。温かい汁物で、心も体もリラックス。",
+        tags: ["10分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["udon-simple", "salad", "tamago-gohan"]
+    },
+    {
+        id: "yakisoba",
+        name: "ソース焼きそば",
+        emoji: "🍝",
+        tagline: "焼きそばの香りで、食欲が止まらない。",
+        description: "焼きそば麺とソースがあれば、簡単に作れる。キャベツと一緒に炒めて、栄養もプラス。",
+        time: 15,
+        timeLabel: "約15分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "焼きそば麺 1玉",
+            "キャベツ 100g",
+            "油 小さじ2",
+            "焼きそばソース 大さじ2",
+            "かつお節 適量",
+            "青のり 適量"
+        ],
+        steps: [
+            "キャベツを細切りにする",
+            "フライパンに油を熱する",
+            "焼きそば麺をほぐしながら炒める",
+            "キャベツを加えて炒める",
+            "ソースを加えてよく混ぜる",
+            "かつお節と青のりをかけて完成"
+        ],
+        tips: "麺は焦げやすいので、弱火でゆっくり炒めるのがコツ。ソースは最後に加えるとムラなく味が付きます。",
+        reason: "15分で、屋台の味が再現できる。焼きそばの香りで、食欲が止まりません。",
+        tags: ["15分", "普通", "初心者OK", "がっつり"],
+        relatedIds: ["chahan", "gyudon", "pasta-tomato"]
+    },
+    {
+        id: "gyudon",
+        name: "簡単牛丼",
+        emoji: "🍖",
+        tagline: "ガッツリ食べたい日の、最強の味方。",
+        description: "牛肉と玉ねぎを甘辛く煮詰めた、ご飯が進む一品。20分で、丼屋さんの味が再現できます。",
+        time: 20,
+        timeLabel: "約20分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "牛肉（薄切り） 150g",
+            "玉ねぎ 1/2個",
+            "ご飯 1杯",
+            "醤油 大さじ1",
+            "砂糖 小さじ1",
+            "水 100ml"
+        ],
+        steps: [
+            "玉ねぎを薄切りにする",
+            "フライパンに牛肉を入れて炒める",
+            "玉ねぎを加えてさらに炒める",
+            "醤油、砂糖、水を加える",
+            "弱火で5分ほど煮詰める",
+            "ご飯の上にかけて完成"
+        ],
+        tips: "牛肉は火が通りやすいので、最後に加えるのもOK。玉ねぎがしんなりするまで煮詰めるのがポイント。",
+        reason: "ガッツリ食べたい日に最適。20分で、丼屋さんの味が家で再現できます。",
+        tags: ["20分", "普通", "初心者OK", "がっつり"],
+        relatedIds: ["oyakodon", "yakisoba", "salad"]
+    },
+    {
+        id: "onigiri",
+        name: "手作りおにぎり",
+        emoji: "🍙",
+        tagline: "朝作って、昼に食べる。シンプルで美味しい。",
+        description: "ご飯と塩があれば、簡単に作れるおにぎり。朝作って、昼に食べるのに最適。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "ご飯 1杯",
+            "塩 ひとつまみ",
+            "のり 1枚"
+        ],
+        steps: [
+            "ご飯を茶碗に盛る",
+            "手に塩をつける",
+            "ご飯を握って三角形にする",
+            "のりを巻いて完成"
+        ],
+        tips: "ご飯は温かいうちに握ると、形が整いやすいです。塩は少なめにして、のりの塩辛さを活かしましょう。",
+        reason: "5分で完成。朝作って、昼に食べるのに最適。シンプルで美味しい。",
+        tags: ["5分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["tamago-gohan", "natto-gohan", "miso-soup"]
+    },
+    {
+        id: "salad",
+        name: "ちぎりキャベツサラダ",
+        emoji: "🥬",
+        tagline: "野菜が食べたい日に、シャキシャキで最高。",
+        description: "キャベツをちぎって、ドレッシングをかけるだけ。シンプルで、栄養満点。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "キャベツ 150g",
+            "ドレッシング 大さじ2",
+            "塩 ひとつまみ"
+        ],
+        steps: [
+            "キャベツを手でちぎる",
+            "ボウルに入れる",
+            "塩をふる",
+            "ドレッシングをかけて混ぜる",
+            "完成"
+        ],
+        tips: "キャベツは冷やしておくと、シャキシャキが長持ちします。食べる直前にドレッシングをかけるのがコツ。",
+        reason: "野菜が食べたい日に最適。5分で完成。シャキシャキで、最高に美味しい。",
+        tags: ["5分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["miso-soup", "pasta-tomato", "onigiri"]
+    },
+    {
+        id: "pasta-tomato",
+        name: "トマト缶パスタ",
+        emoji: "🍅",
+        tagline: "トマト缶があれば、イタリアンの味が再現できる。",
+        description: "トマト缶とニンニクで、簡単にイタリアンパスタが完成。20分で、カフェの味が家で楽しめます。",
+        time: 20,
+        timeLabel: "約20分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "パスタ 100g",
+            "トマト缶 1缶",
+            "ニンニク 1片",
+            "油 大さじ1",
+            "塩 ひとつまみ",
+            "パセリ 適量"
+        ],
+        steps: [
+            "鍋にお湯を沸かしてパスタを茹でる",
+            "ニンニクをみじん切りにする",
+            "フライパンに油を熱してニンニクを炒める",
+            "トマト缶を加える",
+            "塩で味を整える",
+            "茹で上がったパスタを加えて混ぜる",
+            "パセリをかけて完成"
+        ],
+        tips: "ニンニクは焦げやすいので、弱火でゆっくり炒めます。トマト缶は加熱しすぎないようにしましょう。",
+        reason: "トマト缶があれば、20分でカフェの味が再現できる。軽く食べたい日に最適。",
+        tags: ["20分", "普通", "初心者OK", "軽め"],
+        relatedIds: ["yakisoba", "chahan", "salad"]
+    },
+    {
+        id: "oyakodon",
+        name: "親子丼",
+        emoji: "🍗",
+        tagline: "卵とじの優しい味で、心もほっこり。",
+        description: "鶏肉と卵で作る、優しい味わいの親子丼。20分で、丼屋さんの味が再現できます。",
+        time: 20,
+        timeLabel: "約20分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "鶏肉（もも肉） 150g",
+            "玉ねぎ 1/2個",
+            "卵 2個",
+            "ご飯 1杯",
+            "醤油 大さじ1",
+            "砂糖 小さじ1",
+            "水 100ml"
+        ],
+        steps: [
+            "鶏肉を一口大に切る",
+            "玉ねぎを薄切りにする",
+            "フライパンに鶏肉を入れて炒める",
+            "玉ねぎを加えてさらに炒める",
+            "醤油、砂糖、水を加える",
+            "弱火で5分ほど煮詰める",
+            "卵を割ってかけて、半熟になるまで加熱",
+            "ご飯の上にかけて完成"
+        ],
+        tips: "卵は最後に加えて、半熟のままかけるのがポイント。加熱しすぎると、固くなってしまいます。",
+        reason: "卵とじの優しい味で、心もほっこり。20分で、丼屋さんの味が家で再現できます。",
+        tags: ["20分", "普通", "初心者OK", "がっつり"],
+        relatedIds: ["gyudon", "yakisoba", "chahan"]
+    },
+    {
+        id: "udon-simple",
+        name: "シンプルうどん",
+        emoji: "🍜",
+        tagline: "疲れた日は、温かいうどんで癒される。",
+        description: "うどん麺とめんつゆだけで、簡単に作れる。温かいスープで、心も体も温まります。",
+        time: 10,
+        timeLabel: "約10分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "うどん麺 1玉",
+            "水 300ml",
+            "めんつゆ 大さじ2",
+            "ねぎ 適量",
+            "かまぼこ 適量"
+        ],
+        steps: [
+            "鍋に水を入れて沸かす",
+            "うどん麺を加えて茹でる",
+            "めんつゆを加える",
+            "ねぎとかまぼこをトッピング",
+            "完成"
+        ],
+        tips: "めんつゆの濃さは、好みに合わせて調整してください。ねぎは加熱しすぎないようにしましょう。",
+        reason: "疲れた日に最適。10分で完成。温かいうどんで、心も体も癒されます。",
+        tags: ["10分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["miso-soup", "salad", "pasta-tomato"]
+    },
+    {
+        id: "tuna-mayo-rice",
+        name: "ツナマヨ丼",
+        emoji: "🐟",
+        tagline: "缶詰でも、ごちそう感が出ちゃう。",
+        description: "ツナ缶とマヨネーズで、簡単に豪華な丼が完成。缶詰だけで作れるから、買い物が少なくて済みます。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "ご飯 1杯",
+            "ツナ缶 1缶",
+            "マヨネーズ 大さじ1",
+            "醤油 小さじ1",
+            "のり 1枚",
+            "ねぎ 適量"
+        ],
+        steps: [
+            "ツナ缶を開けて、汁を切る",
+            "ボウルにツナを入れる",
+            "マヨネーズと醤油を加えて混ぜる",
+            "ご飯をどんぶりに盛る",
+            "ツナマヨをのせる",
+            "のりとねぎをトッピングして完成"
+        ],
+        tips: "ツナ缶の汁をしっかり切ることで、丼がべちゃべちゃにならません。マヨネーズは好みで調整してください。",
+        reason: "5分で完成。缶詰だけで作れるから、疲れた日の強い味方。ツナマヨの組み合わせは最高です。",
+        tags: ["5分", "節約", "初心者OK", "がっつり"],
+        relatedIds: ["tamago-gohan", "natto-gohan", "chahan"]
+    },
+    {
+        id: "okra-natto",
+        name: "オクラ納豆パスタ",
+        emoji: "🌿",
+        tagline: "ネバネバ同士の組み合わせで、クセになる。",
+        description: "オクラと納豆のネバネバ食材を組み合わせた、栄養満点のパスタ。冷たく食べても温かく食べても美味しい。",
+        time: 15,
+        timeLabel: "約15分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "パスタ 100g",
+            "オクラ 3本",
+            "納豆 1パック",
+            "醤油 小さじ2",
+            "塩 ひとつまみ",
+            "のり 適量"
+        ],
+        steps: [
+            "鍋にお湯を沸かしてパスタを茹でる",
+            "オクラを塩ゆでして、輪切りにする",
+            "パスタが茹で上がったら、ザルに上げて冷ます",
+            "ボウルに納豆を入れて混ぜる",
+            "冷めたパスタを加える",
+            "オクラと醤油を加えてよく混ぜる",
+            "のりをトッピングして完成"
+        ],
+        tips: "冷たいパスタで食べるのがおすすめ。夏の暑い日に最適です。温かいままでも美味しく食べられます。",
+        reason: "ネバネバ食材で、栄養満点。15分で完成。ヘルシーだけど、満足感もあります。",
+        tags: ["15分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["pasta-tomato", "natto-gohan", "salad"]
+    },
+    {
+        id: "cheese-toast",
+        name: "チーズトースト",
+        emoji: "🧀",
+        tagline: "朝ごはんに、おやつに、いつでも活躍。",
+        description: "食パンにチーズをのせて焼くだけ。シンプルだけど、チーズの香りが最高。朝ごはんにもおやつにも。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "食パン 1枚",
+            "チーズ（スライス） 1枚",
+            "バター 小さじ1",
+            "塩 ひとつまみ"
+        ],
+        steps: [
+            "食パンにバターを塗る",
+            "チーズをのせる",
+            "塩をふる",
+            "トースターで3〜4分焼く",
+            "完成"
+        ],
+        tips: "チーズが焦げやすいので、トースターの温度に注意してください。焼き加減は好みで調整してね。",
+        reason: "5分で完成。朝ごはんにもおやつにも最適。チーズの香りで、気分もアップ。",
+        tags: ["5分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["salad", "onigiri", "pasta-tomato"]
+    },
+    {
+        id: "scrambled-eggs",
+        name: "ふわふわスクランブルエッグ",
+        emoji: "🥚",
+        tagline: "卵の優しい味で、朝から幸せ気分。",
+        description: "卵を低温でゆっくり炒めて、ふわふわのスクランブルエッグに。朝ごはんの定番が、ちょっと豪華に。",
+        time: 10,
+        timeLabel: "約10分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "卵 2個",
+            "バター 小さじ1",
+            "塩 ひとつまみ",
+            "こしょう 少々",
+            "牛乳 大さじ1"
+        ],
+        steps: [
+            "ボウルに卵を割る",
+            "牛乳、塩、こしょうを加えてよく混ぜる",
+            "フライパンにバターを入れて弱火で熱する",
+            "卵を流し込む",
+            "ゆっくりかき混ぜながら炒める",
+            "ふわふわになったら完成"
+        ],
+        tips: "低温でゆっくり炒めることが、ふわふわに仕上げるコツ。焦らず、ゆっくり加熱してください。",
+        reason: "10分で完成。卵の優しい味で、朝から幸せ気分。ふわふわの食感が最高です。",
+        tags: ["10分", "節約", "初心者OK", "軽め"],
+        relatedIds: ["cheese-toast", "onigiri", "salad"]
+    },
+    {
+        id: "meatball-pasta",
+        name: "ミートボールパスタ",
+        emoji: "🍝",
+        tagline: "冷凍ミートボールで、本格的な味に。",
+        description: "冷凍ミートボールとトマトソースで、簡単に本格的なパスタが完成。20分で、イタリアンレストランの味。",
+        time: 20,
+        timeLabel: "約20分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "パスタ 100g",
+            "冷凍ミートボール 5個",
+            "トマトソース缶 1缶",
+            "玉ねぎ 1/4個",
+            "ニンニク 1片",
+            "油 大さじ1",
+            "塩 ひとつまみ"
+        ],
+        steps: [
+            "鍋にお湯を沸かしてパスタを茹でる",
+            "フライパンに油を熱してニンニクを炒める",
+            "玉ねぎを加えて炒める",
+            "トマトソースを加える",
+            "冷凍ミートボールを加える",
+            "弱火で10分ほど煮込む",
+            "塩で味を整える",
+            "茹で上がったパスタにかけて完成"
+        ],
+        tips: "冷凍ミートボールは解凍せずにそのまま使えます。トマトソースは加熱しすぎないようにしましょう。",
+        reason: "20分で完成。冷凍ミートボールを使うから、手軽に本格的な味が再現できます。",
+        tags: ["20分", "普通", "初心者OK", "がっつり"],
+        relatedIds: ["pasta-tomato", "yakisoba", "oyakodon"]
+    },
+    {
+        id: "avocado-toast",
+        name: "アボカドトースト",
+        emoji: "🥑",
+        tagline: "SNS映えする朝ごはんが、5分で完成。",
+        description: "アボカドをトーストにのせるだけで、インスタ映えする朝ごはんに。栄養満点で、腹持ちも良い。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "食パン 1枚",
+            "アボカド 1/2個",
+            "レモン汁 小さじ1",
+            "塩 ひとつまみ",
+            "黒こしょう 少々"
+        ],
+        steps: [
+            "食パンをトースターで焼く",
+            "アボカドを半分に切って、種を取る",
+            "スプーンで果肉をくり抜く",
+            "ボウルに入れてつぶす",
+            "レモン汁、塩、黒こしょうを加えて混ぜる",
+            "焼いたパンにのせて完成"
+        ],
+        tips: "アボカドは熟れたものを選ぶと、つぶしやすいです。レモン汁をかけることで、色が変わるのを防げます。",
+        reason: "5分で完成。SNS映えする朝ごはんが、簡単に作れます。栄養満点で、腹持ちも良い。",
+        tags: ["5分", "普通", "初心者OK", "軽め"],
+        relatedIds: ["cheese-toast", "scrambled-eggs", "salad"]
+    },
+    {
+        id: "gyoza",
+        name: "焼き餃子",
+        emoji: "🥟",
+        tagline: "冷凍餃子で、居酒屋の味が再現できる。",
+        description: "冷凍餃子をフライパンで焼くだけ。簡単なのに、本格的な焼き餃子が完成。ビールのお供に最適。",
+        time: 15,
+        timeLabel: "約15分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "冷凍餃子 10個",
+            "油 大さじ1",
+            "水 100ml",
+            "塩 ひとつまみ"
+        ],
+        steps: [
+            "フライパンに油を熱する",
+            "冷凍餃子を並べる",
+            "焼き色がつくまで焼く（3分程度）",
+            "水を加えてふたをする",
+            "蒸し焼きにする（10分程度）",
+            "ふたを取って、水分を飛ばす",
+            "完成"
+        ],
+        tips: "冷凍餃子は解凍せずにそのまま使えます。焼き色がつくまでじっくり焼くのがコツ。",
+        reason: "15分で完成。冷凍餃子で、居酒屋の味が再現できる。ビールのお供に最適。",
+        tags: ["15分", "普通", "初心者OK", "がっつり"],
+        relatedIds: ["yakisoba", "chahan", "meatball-pasta"]
+    },
+    {
+        id: "kimchi-rice",
+        name: "キムチチーズ丼",
+        emoji: "🌶️",
+        tagline: "辛さとチーズのコンビで、クセになる。",
+        description: "キムチとチーズの組み合わせで、ご飯が進む一品。辛さが好きな人にはたまりません。",
+        time: 5,
+        timeLabel: "約5分",
+        budget: "saving",
+        budgetLabel: "節約",
+        skill: "beginner",
+        mood: "hearty",
+        ingredients: [
+            "ご飯 1杯",
+            "キムチ 50g",
+            "チーズ（スライス） 1枚",
+            "卵 1個",
+            "ごま油 小さじ1"
+        ],
+        steps: [
+            "ご飯をどんぶりに盛る",
+            "キムチをのせる",
+            "チーズをのせる",
+            "卵を割ってのせる",
+            "ごま油をかけて完成"
+        ],
+        tips: "卵は半熟のままでも、加熱してもOK。好みで調整してください。辛さが好きな人は、キムチを多めにしてね。",
+        reason: "5分で完成。辛さとチーズのコンビで、ご飯が進む。クセになる味です。",
+        tags: ["5分", "節約", "初心者OK", "がっつり"],
+        relatedIds: ["tuna-mayo-rice", "tamago-gohan", "chahan"]
+    },
+    {
+        id: "spinach-pasta",
+        name: "ほうれん草クリームパスタ",
+        emoji: "🌱",
+        tagline: "野菜が食べたい日に、ヘルシーだけど満足感あり。",
+        description: "ほうれん草と牛乳で作るクリームパスタ。野菜が食べたい日に最適。ヘルシーだけど、満足感もあります。",
+        time: 20,
+        timeLabel: "約20分",
+        budget: "normal",
+        budgetLabel: "普通",
+        skill: "beginner",
+        mood: "light",
+        ingredients: [
+            "パスタ 100g",
+            "ほうれん草 100g",
+            "牛乳 200ml",
+            "バター 小さじ1",
+            "ニンニク 1片",
+            "塩 ひとつまみ",
+            "黒こしょう 少々"
+        ],
+        steps: [
+            "鍋にお湯を沸かしてパスタを茹でる",
+            "ほうれん草を塩ゆでして、食べやすい大きさに切る",
+            "フライパンにバターを入れてニンニクを炒める",
+            "牛乳を加える",
+            "ほうれん草を加える",
+            "塩と黒こしょうで味を整える",
+            "茹で上がったパスタを加えて混ぜる",
+            "完成"
+        ],
+        tips: "牛乳は沸騰させないようにしましょう。ほうれん草は先に塩ゆですることで、アクが取れます。",
+        reason: "20分で完成。野菜が食べたい日に最適。ヘルシーだけど、満足感もあります。",
+        tags: ["20分", "普通", "初心者OK", "軽め"],
+        relatedIds: ["pasta-tomato", "okra-natto", "salad"]
+    }
+];
+
+// ─── 診断質問 ───
+const quizQuestions = [
+    {
+        id: "mood",
+        question: "今の気分は？",
+        options: [
+            { label: "がっつり食べたい", value: "hearty" },
+            { label: "軽く食べたい", value: "light" }
+        ]
+    },
+    {
+        id: "time",
+        question: "調理時間は？",
+        options: [
+            { label: "5分以内", value: "5" },
+            { label: "15分", value: "15" },
+            { label: "30分", value: "30" }
+        ]
+    },
+    {
+        id: "budget",
+        question: "予算は？",
+        options: [
+            { label: "節約したい（200円以下）", value: "saving" },
+            { label: "普通（500円程度）", value: "normal" }
+        ]
+    },
+    {
+        id: "skill",
+        question: "料理スキルは？",
+        options: [
+            { label: "初心者OK", value: "beginner" },
+            { label: "少し経験あり", value: "intermediate" }
+        ]
+    },
+    {
+        id: "extra",
+        question: "優先順位は？",
+        options: [
+            { label: "速さ重視", value: "speed" },
+            { label: "満足感重視", value: "satisfaction" },
+            { label: "ヘルシー重視", value: "health" },
+            { label: "楽しく料理", value: "fun" }
+        ]
+    }
+];
+
+// ─── 診断ロジック ───
+function diagnoseRecipes(answers) {
+    const scores = recipes.map(recipe => {
+        let score = 0;
+
+        // 気分マッチング
+        if (recipe.mood === answers.mood) score += 30;
+
+        // 時間マッチング
+        if (recipe.time <= parseInt(answers.time)) score += 25;
+
+        // 予算マッチング
+        if (recipe.budget === answers.budget) score += 25;
+
+        // スキルマッチング
+        if (recipe.skill === answers.skill) score += 15;
+
+        // 優先順位によるボーナス
+        if (answers.extra === "speed" && recipe.time <= 10) score += 10;
+        if (answers.extra === "satisfaction" && recipe.mood === "hearty") score += 10;
+        if (answers.extra === "health" && recipe.mood === "light") score += 10;
+        if (answers.extra === "fun" && recipe.ingredients.length > 4) score += 10;
+
+        return { recipe, score };
+    });
+
+    // スコアでソート（降順）
+    scores.sort((a, b) => b.score - a.score);
+
+    // トップ3〜5件を返す
+    const count = Math.min(5, Math.max(3, recipes.length / 2));
+    return scores.slice(0, count).map(s => s.recipe);
+}
+
+// ─── ユーティリティ関数 ───
+function getRecipeById(id) {
+    return recipes.find(r => r.id === id);
+}
+
+function getRelatedRecipes(recipe, count = 3) {
+    if (!recipe.relatedIds) return [];
+    return recipe.relatedIds
+        .map(id => getRecipeById(id))
+        .filter(r => r !== undefined)
+        .slice(0, count);
+}
+
+// 異なるタイプのレシピを取得（回遊性向上用）
+function getAlternativeMoodRecipes(recipe, count = 2) {
+    const alternativeMood = recipe.mood === "hearty" ? "light" : "hearty";
+    const alternatives = recipes
+        .filter(r => r.mood === alternativeMood && r.id !== recipe.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, count);
+    return alternatives;
+}
+
+// ランダムレシピ取得（「他のおすすめレシピ」用）
+function getRandomRecipes(count = 3, excludeIds = []) {
+    const available = recipes.filter(r => !excludeIds.includes(r.id));
+    const shuffled = available.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+}

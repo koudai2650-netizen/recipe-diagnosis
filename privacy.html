@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レシピ診断 - きぶんレシピ診断</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .quiz-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quiz-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .quiz-progress {
+            background: var(--border);
+            height: 4px;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--coral) 0%, var(--mint) 100%);
+            transition: width 300ms ease;
+        }
+
+        .quiz-question {
+            margin-bottom: 2rem;
+        }
+
+        .quiz-question-number {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--coral);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .quiz-question-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 160ms var(--ease-out);
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--coral);
+            background: var(--coral-light);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.selected {
+            background: var(--coral);
+            border-color: var(--coral);
+            color: white;
+        }
+
+        .quiz-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .quiz-btn-back {
+            flex: 1;
+            padding: 0.875rem;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 160ms ease;
+        }
+
+        .quiz-btn-back:hover {
+            background: var(--border);
+        }
+
+        .quiz-btn-back:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-btn-next {
+            flex: 1;
+            padding: 0.875rem;
+            background: var(--coral);
+            color: white;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 160ms var(--ease-out);
+        }
+
+        .quiz-btn-next:hover:not(:disabled) {
+            background: var(--coral-dark);
+            transform: translateY(-2px);
+        }
+
+        .quiz-btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-empty {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .quiz-empty-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-empty-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-empty-text {
+            color: var(--brown-light);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="quiz-container">
+        <!-- ナビゲーション -->
+        <header class="site-header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="index.html" class="logo">
+                        <span class="logo-emoji">🍳</span>
+                        <span class="logo-text">きぶんレシピ診断</span>
+                    </a>
+                    <nav class="nav">
+                        <a href="index.html" class="nav-link">ホーム</a>
+                        <a href="quiz.html" class="nav-link active">診断</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="quiz-content">
+            <div class="container">
+                <!-- プログレスバー -->
+                <div class="quiz-progress">
+                    <div class="quiz-progress-bar" id="progressBar"></div>
+                </div>
+
+                <!-- 質問エリア -->
+                <div id="quizArea"></div>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <footer class="site-footer">
+            <div class="container">
+                <div class="footer-logo">
+                    <span class="logo-emoji">🍳</span>
+                    <span class="logo-text">きぶんレシピ診断</span>
+                </div>
+                <p class="footer-desc">気分・時間・予算から、あなたにぴったりのレシピを提案するサービスです。</p>
+                <div class="footer-links">
+                    <a href="index.html">ホーム</a>
+                    <a href="quiz.html">レシピ診断</a>
+                    <a href="privacy.html">🔒 プライバシーポリシー</a>
+                </div>
+                <p class="footer-copyright">© 2025 きぶんレシピ診断</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script>
+        let currentQuestion = 0;
+        const answers = {};
+
+        function renderQuestion() {
+            const question = quizQuestions[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
+
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            const html = `
+                <div class="quiz-question animate-slide-in">
+                    <div class="quiz-question-number">質問 ${currentQuestion + 1} / ${quizQuestions.length}</div>
+                    <h2 class="quiz-question-text">${question.question}</h2>
+                    <div class="quiz-options">
+                        ${question.options.map(option => `
+                            <button 
+                                class="quiz-option ${answers[question.id] === option.value ? 'selected' : ''}"
+                                data-question="${question.id}"
+                                data-value="${option.value}"
+                            >
+                                ${option.label}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-buttons">
+                        <button class="quiz-btn-back" id="btnBack" ${currentQuestion === 0 ? 'disabled' : ''}>
+                            ← 戻る
+                        </button>
+                        <button class="quiz-btn-next" id="btnNext" ${!answers[question.id] ? 'disabled' : ''}>
+                            ${currentQuestion === quizQuestions.length - 1 ? '診断結果を見る' : '次へ'} →
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quizArea').innerHTML = html;
+
+            // イベントリスナー
+            document.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    const value = this.dataset.value;
+                    answers[questionId] = value;
+                    renderQuestion();
+                });
+            });
+
+            document.getElementById('btnBack').addEventListener('click', () => {
+                currentQuestion--;
+                renderQuestion();
+            });
+
+            document.getElementById('btnNext').addEventListener('click', () => {
+                if (currentQuestion === quizQuestions.length - 1) {
+                    // 結果ページへ遷移
+                    const params = new URLSearchParams(answers).toString();
+                    window.location.href = `result.html?${params}`;
+                } else {
+                    currentQuestion++;
+                    renderQuestion();
+                }
+            });
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', renderQuestion);
+    </script>
+</body>
+</html>
